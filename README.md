@@ -44,3 +44,8 @@ This is a full-stack application using Django for the backend and Next.js for th
 ## Access the Application
 - Backend API: http://localhost:8000
 - Frontend: http://localhost:3000
+
+## Super User
+
+Mail: admin@mail.com
+Password: 123
