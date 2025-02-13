@@ -53,3 +53,7 @@ Password: 123
 ## Install necessary library
 
 cd /home/superdev/Documents/Projects/memo && source .venv/bin/activate && pip install djangorestframework-simplejwt
+
+## Run Server
+
+python manage.py runserver
