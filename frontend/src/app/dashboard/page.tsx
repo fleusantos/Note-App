@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import NoteModal from '../components/NoteModal';
 
 interface Category {
   id: string;
@@ -12,7 +13,9 @@ interface Category {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [categories, setCategories] = useState<Category[]>([
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category | undefined>();
+  const [categories] = useState<Category[]>([
     { id: '1', name: 'Random Thoughts', color: '#FF9F1C' },
     { id: '2', name: 'School', color: '#4A4A4A' },
     { id: '3', name: 'Personal', color: '#41B3A3' },
@@ -26,6 +29,14 @@ export default function DashboardPage() {
     }
   }, [router]);
 
+  const handleCategorySelect = (category: Category) => {
+    setSelectedCategory(category);
+  };
+
+  const handleNewNote = () => {
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-[#FFF5EB] flex">
       {/* Sidebar */}
@@ -38,7 +49,10 @@ export default function DashboardPage() {
             {categories.map((category) => (
               <li key={category.id}>
                 <button
-                  className="w-full text-left px-4 py-2 rounded-lg hover:bg-[#8B4513]/5 transition-colors duration-200 flex items-center space-x-2"
+                  className={`w-full text-left px-4 py-2 rounded-lg hover:bg-[#8B4513]/5 transition-colors duration-200 flex items-center space-x-2 ${
+                    selectedCategory?.id === category.id ? 'bg-[#8B4513]/5' : ''
+                  }`}
+                  onClick={() => handleCategorySelect(category)}
                 >
                   <span
                     className="w-2 h-2 rounded-full"
@@ -57,7 +71,10 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold text-[#8B4513]">My Notes</h1>
-          <button className="px-4 py-2 bg-[#8B4513] text-white rounded-lg hover:bg-[#8B4513]/90 transition-colors duration-200 flex items-center space-x-2">
+          <button
+            onClick={handleNewNote}
+            className="px-4 py-2 bg-[#8B4513] text-white rounded-lg hover:bg-[#8B4513]/90 transition-colors duration-200 flex items-center space-x-2"
+          >
             <span>+ New Note</span>
           </button>
         </div>
@@ -76,6 +93,13 @@ export default function DashboardPage() {
           </p>
         </div>
       </div>
+
+      {/* Note Modal */}
+      <NoteModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedCategory={selectedCategory || categories[0]}
+      />
     </div>
   );
 }
