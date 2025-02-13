@@ -7,7 +7,14 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'inria': ['var(--font-inria-serif)'],
+      },
+      colors: {
+        'memo-brown': '#957139',
+      },
+    },
   },
   plugins: [],
 };
