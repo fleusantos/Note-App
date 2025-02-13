@@ -144,7 +144,10 @@ export default function DashboardPage() {
     } else if (dateWithoutTime.getTime() === yesterdayWithoutTime.getTime()) {
       return 'yesterday';
     }
-    return date.toLocaleDateString();
+    
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const day = date.getDate();
+    return `${month} ${day}`;
   };
 
   const filteredNotes = notes;  // No need to filter since the API already does that
@@ -212,20 +215,38 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredNotes.map(note => {
               const category = categories.find(c => c.id === note.categoryId);
+              // Function to get a stronger version of the category color
+              const getBorderColor = (baseColor: string) => {
+                if (!baseColor) return '#957139';
+                // Remove the '#' and split into RGB components
+                const hex = baseColor.replace('#', '');
+                const r = parseInt(hex.substring(0, 2), 16);
+                const g = parseInt(hex.substring(2, 4), 16);
+                const b = parseInt(hex.substring(4, 6), 16);
+                // Make the color stronger by reducing brightness but maintaining hue
+                const factor = 0.8; // Darkening factor
+                const newR = Math.floor(r * factor);
+                const newG = Math.floor(g * factor);
+                const newB = Math.floor(b * factor);
+                return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+              };
+              
               return (
                 <div
                   key={note.id}
-                  className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200"
-                  style={{ borderTop: `4px solid ${category?.color || '#8B4513'}` }}
+                  className="rounded-[11px] p-4 shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)] transition-shadow duration-200"
+                  style={{ 
+                    backgroundColor: category?.color ? `${category.color}20` : '#FAF1E3',
+                    border: `3px solid ${getBorderColor(category?.color || '#957139')}`
+                  }}
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-[#4A4A4A] line-clamp-1">{note.title}</h3>
-                    <span className="text-sm text-[#8B4513]">{category?.name}</span>
+                  <div className="flex items-center gap-2 mb-3 text-[#4A4A4A]">
+                    <span className="font-inter text-note-sm-bold capitalize">{formatDate(note.createdAt)}</span>
+                    <span>•</span>
+                    <span className="font-inter text-note-sm">{category?.name}</span>
                   </div>
-                  <p className="text-[#666] mb-4 line-clamp-3">{note.content}</p>
-                  <div className="text-sm text-[#8B4513]">
-                    {formatDate(note.createdAt)}
-                  </div>
+                  <h3 className="font-inria text-note-title mb-4 text-black">{note.title}</h3>
+                  <p className="font-inter text-note-sm text-[#4A4A4A] leading-relaxed line-clamp-4">{note.content}</p>
                 </div>
               );
             })}

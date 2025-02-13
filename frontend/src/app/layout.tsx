@@ -4,9 +4,9 @@ import { Inria_Serif } from 'next/font/google';
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], weight: ['400', '700'] });
 const inriaSerif = Inria_Serif({ 
-  weight: ['300', '400', '700'],
+  weight: ['400', '700'],
   subsets: ['latin'],
   variable: '--font-inria-serif'
 });
