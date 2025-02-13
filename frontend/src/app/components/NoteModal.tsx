@@ -13,19 +13,22 @@ interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedCategory: Category;
+  categories: Category[];
   onSave: (note: { title: string; content: string; categoryId: string }) => void;
 }
 
-export default function NoteModal({ isOpen, onClose, selectedCategory, onSave }: NoteModalProps) {
+export default function NoteModal({ isOpen, onClose, selectedCategory, categories, onSave }: NoteModalProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState(selectedCategory.id);
 
   useEffect(() => {
     if (!isOpen) {
       setTitle('');
       setContent('');
     }
-  }, [isOpen]);
+    setSelectedCategoryId(selectedCategory.id);
+  }, [isOpen, selectedCategory]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +37,7 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, onSave }:
     onSave({
       title: title.trim(),
       content: content.trim(),
-      categoryId: selectedCategory.id === 'all' ? '1' : selectedCategory.id, // Default to Random Thoughts if All Categories is selected
+      categoryId: selectedCategoryId === 'all' ? '1' : selectedCategoryId,
     });
   };
 
@@ -47,14 +50,21 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, onSave }:
       <div className="bg-[#FFE5D9] rounded-2xl w-full max-w-3xl min-h-[80vh] flex flex-col relative">
         {/* Header with category and close button */}
         <div className="flex justify-between items-center p-4 border-b border-[#8B4513]/10">
-          <div className="flex items-center space-x-2">
-            <span
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: selectedCategory.color }}
-            />
-            <span className="text-[#8B4513]">
-              {selectedCategory.name}
-            </span>
+          <div className="relative">
+            <select
+              value={selectedCategoryId}
+              onChange={(e) => setSelectedCategoryId(e.target.value)}
+              className="appearance-none bg-transparent pr-8 text-[#8B4513] cursor-pointer focus:outline-none"
+            >
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-[#8B4513]">
+              ▼
+            </div>
           </div>
           <button
             type="button"

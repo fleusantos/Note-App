@@ -218,6 +218,7 @@ export default function DashboardPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         selectedCategory={selectedCategory}
+        categories={categories.filter(cat => cat.id !== 'all')} // Exclude 'All Categories' from dropdown
         onSave={handleSaveNote}
       />
     </div>
