@@ -45,14 +45,16 @@ export default function DashboardPage() {
         if (existingCategories.length === 0) {
           // Create default categories
           const defaultCategories = [
-            { name: 'Random Thoughts', color: '#FF9F1C' },
-            { name: 'School', color: '#4A4A4A' },
-            { name: 'Personal', color: '#41B3A3' },
+            {id: 'random', name: 'Random Thoughts', color: '#FF9F1C' },
+            {id: 'school', name: 'School', color: '#4A4A4A' },
+            {id: 'personal', name: 'Personal', color: '#41B3A3' },
           ];
 
           const createdCategories = await Promise.all(
             defaultCategories.map(cat => categoriesApi.createCategory(cat))
           );
+
+          alert(JSON.stringify(createdCategories))
 
           setCategories([
             { id: 'all', name: 'All Categories', color: '#8B4513' },
@@ -234,7 +236,7 @@ export default function DashboardPage() {
               return (
                 <div
                   key={note.id}
-                  className="rounded-[11px] p-4 shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)] transition-shadow duration-200"
+                  className="h-[246px] rounded-[11px] p-4 shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)] transition-shadow duration-200 flex flex-col"
                   style={{ 
                     backgroundColor: category?.color ? `${category.color}20` : '#FAF1E3',
                     border: `3px solid ${getBorderColor(category?.color || '#957139')}`
@@ -242,11 +244,10 @@ export default function DashboardPage() {
                 >
                   <div className="flex items-center gap-2 mb-3 text-[#4A4A4A]">
                     <span className="font-inter text-note-sm-bold capitalize">{formatDate(note.createdAt)}</span>
-                    <span>•</span>
                     <span className="font-inter text-note-sm">{category?.name}</span>
                   </div>
                   <h3 className="font-inria text-note-title mb-4 text-black">{note.title}</h3>
-                  <p className="font-inter text-note-sm text-[#4A4A4A] leading-relaxed line-clamp-4">{note.content}</p>
+                  <p className="font-inter text-note-sm text-[#4A4A4A] leading-relaxed line-clamp-4 flex-1">{note.content}</p>
                 </div>
               );
             })}
