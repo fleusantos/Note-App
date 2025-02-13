@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Cup -->
+    <path d="M60 70 L140 70 L130 180 H70 L60 70" fill="#FFB75E"/>
+    <path d="M65 80 L135 80 L127 170 H73 L65 80" fill="#FFE4B5"/>
+    
+    <!-- Lid -->
+    <path d="M55 70 C55 60 145 60 145 70" stroke="#8B4513" stroke-width="4"/>
+    
+    <!-- Straw -->
+    <path d="M110 40 L110 150" stroke="#8B4513" stroke-width="8" stroke-linecap="round"/>
+    <path d="M110 40 C110 40 100 30 110 20" stroke="#8B4513" stroke-width="8" stroke-linecap="round"/>
+    
+    <!-- Bubbles -->
+    <circle cx="90" cy="130" r="6" fill="#8B4513"/>
+    <circle cx="105" cy="140" r="6" fill="#8B4513"/>
+    <circle cx="85" cy="150" r="6" fill="#8B4513"/>
+    <circle cx="100" cy="155" r="6" fill="#8B4513"/>
+    
+    <!-- Tea -->
+    <path d="M65 80 L135 80 L130 110 H70 L65 80" fill="#D4A017"/>
+    
+    <!-- Happy Face -->
+    <circle cx="95" cy="95" r="2" fill="#8B4513"/>
+    <circle cx="105" cy="95" r="2" fill="#8B4513"/>
+    <path d="M93 105 Q100 110 107 105" stroke="#8B4513" stroke-width="2" fill="none"/>
+    
+    <!-- Steam -->
+    <path d="M80 50 Q85 40 90 50" stroke="#8B4513" stroke-width="2" fill="none"/>
+    <path d="M95 45 Q100 35 105 45" stroke="#8B4513" stroke-width="2" fill="none"/>
+    <path d="M110 50 Q115 40 120 50" stroke="#8B4513" stroke-width="2" fill="none"/>
+</svg>
