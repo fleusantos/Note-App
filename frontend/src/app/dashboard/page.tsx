@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import NoteModal from '../components/NoteModal';
+import { notesApi, categoriesApi, Note as ApiNote } from '../services/api';
 
 interface Category {
   id: string;
@@ -23,11 +24,8 @@ export default function DashboardPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category>({ id: 'all', name: 'All Categories', color: '#8B4513' });
-  const [categories] = useState<Category[]>([
+  const [categories, setCategories] = useState<Category[]>([
     { id: 'all', name: 'All Categories', color: '#8B4513' },
-    { id: '1', name: 'Random Thoughts', color: '#FF9F1C' },
-    { id: '2', name: 'School', color: '#4A4A4A' },
-    { id: '3', name: 'Personal', color: '#41B3A3' },
   ]);
   const [notes, setNotes] = useState<Note[]>([]);
 
@@ -36,8 +34,66 @@ export default function DashboardPage() {
     const token = localStorage.getItem('accessToken');
     if (!token) {
       router.push('/auth/login');
+      return;
     }
+
+    // Initialize default categories if they don't exist
+    const initializeCategories = async () => {
+      try {
+        const existingCategories = await categoriesApi.fetchCategories();
+        
+        if (existingCategories.length === 0) {
+          // Create default categories
+          const defaultCategories = [
+            { name: 'Random Thoughts', color: '#FF9F1C' },
+            { name: 'School', color: '#4A4A4A' },
+            { name: 'Personal', color: '#41B3A3' },
+          ];
+
+          const createdCategories = await Promise.all(
+            defaultCategories.map(cat => categoriesApi.createCategory(cat))
+          );
+
+          setCategories([
+            { id: 'all', name: 'All Categories', color: '#8B4513' },
+            ...createdCategories,
+          ]);
+        } else {
+          setCategories([
+            { id: 'all', name: 'All Categories', color: '#8B4513' },
+            ...existingCategories,
+          ]);
+        }
+      } catch (error) {
+        console.error('Failed to initialize categories:', error);
+      }
+    };
+
+    initializeCategories();
   }, [router]);
+
+  useEffect(() => {
+    // Fetch notes when component mounts or selected category changes
+    const fetchNotes = async () => {
+      try {
+        const apiNotes = await notesApi.fetchNotes(selectedCategory.id);
+        const transformedNotes: Note[] = apiNotes.map(note => ({
+          id: note.id,
+          title: note.title,
+          content: note.content,
+          categoryId: note.category,
+          createdAt: note.created_at,
+        }));
+        setNotes(transformedNotes);
+      } catch (error) {
+        console.error('Failed to fetch notes:', error);
+      }
+    };
+
+    if (categories.length > 1) { // Only fetch notes after categories are loaded
+      fetchNotes();
+    }
+  }, [selectedCategory.id, categories]);
 
   const handleCategorySelect = (category: Category) => {
     setSelectedCategory(category);
@@ -47,19 +103,31 @@ export default function DashboardPage() {
     setIsModalOpen(true);
   };
 
-  const handleSaveNote = (note: Omit<Note, 'id' | 'createdAt'>) => {
-    const newNote: Note = {
-      ...note,
-      id: Math.random().toString(36).substr(2, 9),
-      createdAt: new Date().toISOString(),
-    };
-    setNotes(prev => [newNote, ...prev]);
-    setIsModalOpen(false);
+  const handleSaveNote = async (note: Omit<Note, 'id' | 'createdAt'>) => {
+    try {
+      const targetCategory = note.categoryId === 'all' ? categories[1].id : note.categoryId; // Use first real category if 'all' is selected
+      const apiNote = await notesApi.createNote({
+        title: note.title,
+        content: note.content,
+        category: targetCategory,
+      });
+      
+      const newNote: Note = {
+        id: apiNote.id,
+        title: apiNote.title,
+        content: apiNote.content,
+        categoryId: apiNote.category,
+        createdAt: apiNote.created_at,
+      };
+      
+      setNotes(prev => [newNote, ...prev]);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Failed to create note:', error);
+    }
   };
 
-  const filteredNotes = selectedCategory.id === 'all' 
-    ? notes 
-    : notes.filter(note => note.categoryId === selectedCategory.id);
+  const filteredNotes = notes;  // No need to filter since the API already does that
 
   return (
     <div className="min-h-screen bg-[#FFF5EB] flex">
