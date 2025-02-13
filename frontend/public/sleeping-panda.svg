@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Body -->
+    <circle cx="60" cy="60" r="50" fill="#FFFFFF" stroke="#8B4513" stroke-width="4"/>
+    
+    <!-- Left Ear -->
+    <circle cx="35" cy="30" r="15" fill="#8B4513"/>
+    
+    <!-- Right Ear -->
+    <circle cx="85" cy="30" r="15" fill="#8B4513"/>
+    
+    <!-- Left Eye Patch -->
+    <circle cx="40" cy="55" r="18" fill="#8B4513"/>
+    
+    <!-- Right Eye Patch -->
+    <circle cx="80" cy="55" r="18" fill="#8B4513"/>
+    
+    <!-- Sleeping Eyes (as curves) -->
+    <path d="M35 55 Q40 50, 45 55" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+    <path d="M75 55 Q80 50, 85 55" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Nose -->
+    <circle cx="60" cy="65" r="8" fill="#8B4513"/>
+    
+    <!-- Sleeping Zzz -->
+    <text x="90" y="30" font-family="Arial" font-size="14" fill="#8B4513" transform="rotate(-15, 90, 30)">z</text>
+    <text x="100" y="25" font-family="Arial" font-size="18" fill="#8B4513" transform="rotate(-15, 100, 25)">z</text>
+    <text x="112" y="20" font-family="Arial" font-size="22" fill="#8B4513" transform="rotate(-15, 112, 20)">z</text>
+</svg>

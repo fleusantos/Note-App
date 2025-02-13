@@ -49,3 +49,7 @@ This is a full-stack application using Django for the backend and Next.js for th
 
 Mail: admin@mail.com
 Password: 123
+
+## Install necessary library
+
+cd /home/superdev/Documents/Projects/memo && source .venv/bin/activate && pip install djangorestframework-simplejwt

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -16,7 +16,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:8000/api/auth/token/', {
+      const res = await fetch('http://localhost:8000/api/auth/register/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,12 +27,11 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.detail || 'Login failed');
+        throw new Error(data.detail || 'Registration failed');
       }
 
-      localStorage.setItem('accessToken', data.access);
-      localStorage.setItem('refreshToken', data.refresh);
-      router.push('/');
+      // Redirect to login page after successful registration
+      router.push('/auth/login');
     } catch (err: any) {
       setError(err.message);
     }
@@ -43,14 +42,14 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="flex flex-col items-center">
           <Image
-            src="/flower.png"
-            alt="Cactus"
+            src="/cat.png"
+            alt="Sleeping Cat"
             width={120}
             height={120}
             className="mb-4"
           />
           <h2 className="text-center text-3xl font-bold text-[#8B4513]">
-            Yay, You're Back!
+            Yay, New Friend!
           </h2>
         </div>
         
@@ -66,7 +65,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 required
-                className="input-field focus:ring-[#A78BFA] focus:border-[#A78BFA]"
+                className="input-field"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -76,7 +75,7 @@ export default function LoginPage() {
               <input
                 type="password"
                 required
-                className="input-field focus:ring-[#A78BFA] focus:border-[#A78BFA]"
+                className="input-field"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -85,12 +84,12 @@ export default function LoginPage() {
           </div>
 
           <button type="submit" className="btn-primary">
-            Login
+            Sign Up
           </button>
 
           <div className="text-center">
-            <Link href="/auth/signup" className="link-text text-sm">
-              Oops! I've never been here before
+            <Link href="/auth/login" className="link-text text-sm">
+              We're already friends!
             </Link>
           </div>
         </form>
