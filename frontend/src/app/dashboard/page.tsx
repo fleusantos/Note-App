@@ -127,6 +127,26 @@ export default function DashboardPage() {
     }
   };
 
+  // Helper function to format date
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    // Reset time part for accurate date comparison
+    const dateWithoutTime = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const todayWithoutTime = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const yesterdayWithoutTime = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+
+    if (dateWithoutTime.getTime() === todayWithoutTime.getTime()) {
+      return 'today';
+    } else if (dateWithoutTime.getTime() === yesterdayWithoutTime.getTime()) {
+      return 'yesterday';
+    }
+    return date.toLocaleDateString();
+  };
+
   const filteredNotes = notes;  // No need to filter since the API already does that
 
   return (
@@ -204,7 +224,7 @@ export default function DashboardPage() {
                   </div>
                   <p className="text-[#666] mb-4 line-clamp-3">{note.content}</p>
                   <div className="text-sm text-[#8B4513]">
-                    {new Date(note.createdAt).toLocaleDateString()}
+                    {formatDate(note.createdAt)}
                   </div>
                 </div>
               );
