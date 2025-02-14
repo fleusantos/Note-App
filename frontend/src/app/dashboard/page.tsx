@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import NoteModal from '../components/NoteModal';
-import { notesApi, categoriesApi, Note as ApiNote } from '../services/api';
+import { notesApi, categoriesApi } from '../services/api';
 
 interface Category {
   id: string;
@@ -71,13 +71,17 @@ export default function DashboardPage() {
     const fetchNotes = async () => {
       try {
         const apiNotes = await notesApi.fetchNotes(selectedCategory.id === 'all' ? undefined : selectedCategory.id);
-        const transformedNotes = apiNotes.map(note => ({
-          id: note.id,
-          title: note.title,
-          content: note.content,
-          categoryId: note.category,
-          createdAt: note.created_at,
-        }));
+        const transformedNotes = apiNotes.map(note => {
+          const noteCategory = categories.find(cat => cat.id === note.category);
+          return {
+            id: note.id,
+            title: note.title,
+            content: note.content,
+            categoryId: note.category,
+            createdAt: note.created_at,
+            color: noteCategory?.color || '#000000', // Default color if category not found
+          };
+        });
         setNotes(transformedNotes);
       } catch (error) {
         console.error('Failed to fetch notes:', error);
@@ -120,6 +124,7 @@ export default function DashboardPage() {
           content: apiNote.content,
           categoryId: apiNote.category,
           createdAt: apiNote.created_at,
+          color: categories.find(cat => cat.id === apiNote.category)?.color || '#000000',
         };
 
         setNotes(prev => prev.map(note => 
@@ -139,6 +144,7 @@ export default function DashboardPage() {
           content: apiNote.content,
           categoryId: apiNote.category,
           createdAt: apiNote.created_at,
+          color: categories.find(cat => cat.id === apiNote.category)?.color || '#000000',
         };
         
         setNotes(prev => [newNote, ...prev]);
