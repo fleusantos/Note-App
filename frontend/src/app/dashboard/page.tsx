@@ -23,7 +23,8 @@ interface Note {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [allNotes, setAllNotes] = useState<Note[]>([]);
+  const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category>({ id: 'all', name: 'All Categories', color: '#8B4513' });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,7 +71,8 @@ export default function DashboardPage() {
 
     const fetchNotes = async () => {
       try {
-        const apiNotes = await notesApi.fetchNotes(selectedCategory.id === 'all' ? undefined : selectedCategory.id);
+        // Always fetch all notes
+        const apiNotes = await notesApi.fetchNotes();
         const transformedNotes = apiNotes.map(note => {
           const noteCategory = categories.find(cat => cat.id === note.category);
           return {
@@ -79,10 +81,17 @@ export default function DashboardPage() {
             content: note.content,
             categoryId: note.category,
             createdAt: note.created_at,
-            color: noteCategory?.color || '#000000', // Default color if category not found
+            color: noteCategory?.color || '#000000',
           };
         });
-        setNotes(transformedNotes);
+        setAllNotes(transformedNotes);
+        
+        // Filter notes based on selected category
+        if (selectedCategory.id === 'all') {
+          setFilteredNotes(transformedNotes);
+        } else {
+          setFilteredNotes(transformedNotes.filter(note => note.categoryId === selectedCategory.id));
+        }
       } catch (error) {
         console.error('Failed to fetch notes:', error);
       }
@@ -94,6 +103,11 @@ export default function DashboardPage() {
 
   const handleCategorySelect = (category: Category) => {
     setSelectedCategory(category);
+    if (category.id === 'all') {
+      setFilteredNotes(allNotes);
+    } else {
+      setFilteredNotes(allNotes.filter(note => note.categoryId === category.id));
+    }
   };
 
   const handleNewNote = () => {
@@ -127,9 +141,18 @@ export default function DashboardPage() {
           color: categories.find(cat => cat.id === apiNote.category)?.color || '#000000',
         };
 
-        setNotes(prev => prev.map(note => 
+        // Update both allNotes and filteredNotes
+        setAllNotes(prev => prev.map(note => 
           note.id === updatedNote.id ? updatedNote : note
         ));
+        
+        if (selectedCategory.id === 'all' || selectedCategory.id === updatedNote.categoryId) {
+          setFilteredNotes(prev => prev.map(note => 
+            note.id === updatedNote.id ? updatedNote : note
+          ));
+        } else {
+          setFilteredNotes(prev => prev.filter(note => note.id !== updatedNote.id));
+        }
       } else {
         // Create new note
         const apiNote = await notesApi.createNote({
@@ -147,7 +170,11 @@ export default function DashboardPage() {
           color: categories.find(cat => cat.id === apiNote.category)?.color || '#000000',
         };
         
-        setNotes(prev => [newNote, ...prev]);
+        // Update both allNotes and filteredNotes
+        setAllNotes(prev => [newNote, ...prev]);
+        if (selectedCategory.id === 'all' || selectedCategory.id === newNote.categoryId) {
+          setFilteredNotes(prev => [newNote, ...prev]);
+        }
       }
 
       setIsModalOpen(false);
@@ -180,30 +207,40 @@ export default function DashboardPage() {
     return `${month} ${day}`;
   };
 
-  const filteredNotes = notes;  // No need to filter since the API already does that
-
   return (
     <div className="min-h-screen bg-[#FFF5EB] flex">
       {/* Sidebar */}
-      <div className="w-64 p-6 border-r border-[#8B4513]/10">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-lg font-semibold text-[#8B4513]">Categories</h2>
-        </div>
-        <nav>
-          <ul className="space-y-2">
+      <div className="w-[256px] p-4 border-r border-[#8B4513]/10">
+        <nav className="mt-[82px]">
+          <ul className="space-y-1">
             {categories.map((category) => (
               <li key={category.id}>
                 <button
-                  className={`w-full text-left px-4 py-2 rounded-lg hover:bg-[#8B4513]/5 transition-colors duration-200 flex items-center space-x-2 ${
+                  className={`w-full text-left px-3 py-2 rounded-lg hover:bg-[#8B4513]/5 transition-colors duration-200 flex items-center justify-between ${
                     selectedCategory.id === category.id ? 'bg-[#8B4513]/5' : ''
                   }`}
                   onClick={() => handleCategorySelect(category)}
                 >
-                  <div 
-                    className="w-3 h-3 rounded-full flex-shrink-0" 
-                    style={{ backgroundColor: category.color }}
-                  />
-                  <span className="text-[#8B4513]">{category.name}</span>
+                  <div className="flex items-center space-x-2">
+                    {category.id !== 'all' && (
+                      <div 
+                        className="w-3 h-3 rounded-full flex-shrink-0" 
+                        style={{ backgroundColor: category.color }}
+                      />
+                    )}
+                    <span className={`font-inter text-black ${
+                      category.id === 'all' 
+                        ? 'text-xs font-bold' // 12px, 700 weight for All Categories
+                        : 'text-xs font-normal' // 12px, 400 weight for other categories
+                    }`}>
+                      {category.name}
+                    </span>
+                  </div>
+                  {category.id !== 'all' && (
+                    <span className="text-black text-xs font-normal">
+                      {allNotes.filter(note => note.categoryId === category.id).length}
+                    </span>
+                  )}
                 </button>
               </li>
             ))}
@@ -216,7 +253,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold text-[#8B4513]">
-            {selectedCategory.name === 'All Categories' ? 'My Notes' : selectedCategory.name}
+            {/* {selectedCategory.name === 'All Categories' ? 'My Notes' : selectedCategory.name} */}
           </h1>
           <button
             onClick={handleNewNote}
