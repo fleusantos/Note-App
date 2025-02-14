@@ -113,74 +113,6 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
       >
         {/* Header with category and close button */}
         <div className="flex justify-between items-center py-6">
-          <div className="relative category-dropdown">
-            <button
-              type="button"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="appearance-none cursor-pointer focus:outline-none border font-inter text-xs font-normal transition-colors flex items-center gap-2 w-[225px]"
-              style={{ 
-                borderColor: currentCategory.color,
-                borderWidth: '1px',
-                borderRadius: '6px',
-                paddingTop: '7px',
-                paddingRight: '35px',
-                paddingBottom: '7px',
-                paddingLeft: '15px',
-                backgroundColor: '#FAF1E3',
-                color: '#000'
-              }}
-            >
-              <div 
-                className="w-3 h-3 rounded-full flex-shrink-0" 
-                style={{ backgroundColor: currentCategory.color }}
-              />
-              <span className="truncate">{currentCategory.name}</span>
-              <div 
-                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-200"
-              >
-                <svg 
-                  width="12" 
-                  height="12" 
-                  viewBox="0 0 12 12" 
-                  fill="none" 
-                  xmlns="http://www.w3.org/2000/svg"
-                  style={{ 
-                    fill: 'none',
-                    stroke: currentCategory.color,
-                    transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-                  }}
-                >
-                  <path d="M2.5 4.5L6 8L9.5 4.5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-            </button>
-
-            {isDropdownOpen && (
-              <div 
-                className="absolute left-0 right-0 mt-1 bg-[#FAF1E3] border rounded-lg shadow-lg py-1 z-10"
-                style={{ borderColor: currentCategory.color }}
-              >
-                {categories.map((category) => (
-                  <button
-                    key={category.id}
-                    type="button"
-                    className="w-full px-4 py-2 text-left text-xs font-inter hover:bg-black/5 flex items-center gap-2"
-                    onClick={() => {
-                      setSelectedCategoryId(category.id);
-                      setCurrentCategory(category);
-                      setIsDropdownOpen(false);
-                    }}
-                  >
-                    <div 
-                      className="w-3 h-3 rounded-full flex-shrink-0" 
-                      style={{ backgroundColor: category.color }}
-                    />
-                    <span className="truncate">{category.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
           <button
             type="button"
             onClick={handleClose}
@@ -188,40 +120,82 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
           >
             ×
           </button>
+          <div className="text-sm text-black/60">
+            Last Edited: {currentTime}
+          </div>
         </div>
 
         <div className="flex-1 flex flex-col">
-          {/* Note content */}
-          <div 
-            className="flex-1 flex flex-col rounded-t-2xl"
-            style={{
-              backgroundColor: currentCategory.color,
-              borderColor: currentCategory.color,
-              borderWidth: '1px'
-            }}
-          >
-            <div className="flex-1 p-6 space-y-4">
-              <input
-                type="text"
-                placeholder="Note Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder-black/50 text-black"
-              />
-              <textarea
-                placeholder="Pour your heart out..."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="w-full h-[calc(80vh-200px)] bg-transparent border-none outline-none resize-none placeholder-black/50 text-black"
-              />
-            </div>
+          {/* Category dropdown */}
+          <div className="flex justify-between items-center p-4 border-b" style={{ borderColor: currentCategory.color }}>
+            <div className="relative category-dropdown">
+              <button
+                type="button"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm hover:bg-black/5"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: currentCategory.color }}
+                />
+                <span>{currentCategory.name}</span>
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    isDropdownOpen ? 'rotate-180' : ''
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
 
-            {/* Last edited timestamp */}
-            <div className="p-4 text-sm border-t text-black" style={{ 
-              borderColor: currentCategory.color
-            }}>
-              Last Edited: {currentTime}
+              {/* Dropdown menu */}
+              {isDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-48 rounded-lg bg-white shadow-lg border border-gray-100 z-10">
+                  {categories.map((category) => (
+                    <button
+                      key={category.id}
+                      type="button"
+                      className="w-full px-4 py-2 text-left text-xs font-inter hover:bg-black/5 flex items-center gap-2"
+                      onClick={() => {
+                        setSelectedCategoryId(category.id);
+                        setCurrentCategory(category);
+                        setIsDropdownOpen(false);
+                      }}
+                    >
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      <span>{category.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+          </div>
+
+          <div className="flex-1 p-6 space-y-4">
+            <input
+              type="text"
+              placeholder="Note Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder-black/50 text-black"
+            />
+            <textarea
+              placeholder="Pour your heart out..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="w-full h-[calc(80vh-200px)] bg-transparent border-none outline-none resize-none placeholder-black/50 text-black"
+            />
           </div>
         </div>
       </div>

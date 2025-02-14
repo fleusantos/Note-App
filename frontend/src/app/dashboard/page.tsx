@@ -18,16 +18,15 @@ interface Note {
   content: string;
   categoryId: string;
   createdAt: string;
+  color: string;
 }
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category>({ id: 'all', name: 'All Categories', color: '#8B4513' });
-  const [categories, setCategories] = useState<Category[]>([
-    { id: 'all', name: 'All Categories', color: '#8B4513' },
-  ]);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<Category>({ id: 'all', name: 'All Categories', color: '#8B4513' });
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
 
   useEffect(() => {
@@ -38,7 +37,6 @@ export default function DashboardPage() {
       return;
     }
 
-    // Initialize default categories if they don't exist
     const initializeCategories = async () => {
       try {
         const existingCategories = await categoriesApi.fetchCategories();
@@ -70,15 +68,10 @@ export default function DashboardPage() {
       }
     };
 
-    initializeCategories();
-  }, [router]);
-
-  useEffect(() => {
-    // Fetch notes when component mounts or selected category changes
     const fetchNotes = async () => {
       try {
         const apiNotes = await notesApi.fetchNotes(selectedCategory.id === 'all' ? undefined : selectedCategory.id);
-        const transformedNotes: Note[] = apiNotes.map(note => ({
+        const transformedNotes = apiNotes.map(note => ({
           id: note.id,
           title: note.title,
           content: note.content,
@@ -91,10 +84,9 @@ export default function DashboardPage() {
       }
     };
 
-    if (categories.length > 1) { // Only fetch notes after categories are loaded
-      fetchNotes();
-    }
-  }, [selectedCategory.id, categories]);
+    initializeCategories();
+    fetchNotes();
+  }, [router, selectedCategory.id]);
 
   const handleCategorySelect = (category: Category) => {
     setSelectedCategory(category);
@@ -201,8 +193,8 @@ export default function DashboardPage() {
                   }`}
                   onClick={() => handleCategorySelect(category)}
                 >
-                  <span
-                    className="w-2 h-2 rounded-full"
+                  <div 
+                    className="w-3 h-3 rounded-full flex-shrink-0" 
                     style={{ backgroundColor: category.color }}
                   />
                   <span className="text-[#8B4513]">{category.name}</span>
@@ -222,9 +214,23 @@ export default function DashboardPage() {
           </h1>
           <button
             onClick={handleNewNote}
-            className="px-4 py-2 bg-[#8B4513] text-white rounded-lg hover:bg-[#8B4513]/90 transition-colors duration-200 flex items-center space-x-2"
+            className="px-6 py-3 bg-[#FDF5E6] border border-memo-brown text-[#8B4513] rounded-full font-inter hover:bg-[#F5E6D3] transition-colors duration-200 focus:outline-none focus:border-memo-brown focus:ring-1 focus:ring-memo-brown disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            <span>+ New Note</span>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            New Note
           </button>
         </div>
 
@@ -247,22 +253,6 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredNotes.map(note => {
               const category = categories.find(c => c.id === note.categoryId);
-              // Function to get a stronger version of the category color
-              const getBorderColor = (baseColor: string) => {
-                if (!baseColor) return '#957139';
-                // Remove the '#' and split into RGB components
-                const hex = baseColor.replace('#', '');
-                const r = parseInt(hex.substring(0, 2), 16);
-                const g = parseInt(hex.substring(2, 4), 16);
-                const b = parseInt(hex.substring(4, 6), 16);
-                // Make the color stronger by reducing brightness but maintaining hue
-                const factor = 0.8; // Darkening factor
-                const newR = Math.floor(r * factor);
-                const newG = Math.floor(g * factor);
-                const newB = Math.floor(b * factor);
-                return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
-              };
-              
               return (
                 <div
                   key={note.id}
