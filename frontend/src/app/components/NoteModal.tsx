@@ -66,8 +66,17 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
       } else {
         setTitle('');
         setContent('');
-        setSelectedCategoryId(selectedCategory.id);
-        setCurrentCategory(selectedCategory);
+        // If selected category is "All Categories", set to "Personal" category
+        if (selectedCategory.id === 'all') {
+          const personalCategory = categories.find(c => c.name === 'Personal');
+          if (personalCategory) {
+            setSelectedCategoryId(personalCategory.id);
+            setCurrentCategory(personalCategory);
+          }
+        } else {
+          setSelectedCategoryId(selectedCategory.id);
+          setCurrentCategory(selectedCategory);
+        }
       }
     }
   }, [isOpen, selectedCategory, existingNote, categories]);
