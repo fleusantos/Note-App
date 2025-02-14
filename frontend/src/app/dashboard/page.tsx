@@ -43,18 +43,16 @@ export default function DashboardPage() {
         const existingCategories = await categoriesApi.fetchCategories();
         
         if (existingCategories.length === 0) {
-          // Create default categories
+          // Create default categories with specific colors
           const defaultCategories = [
-            {id: 'random', name: 'Random Thoughts', color: '#FF9F1C' },
-            {id: 'school', name: 'School', color: '#4A4A4A' },
-            {id: 'personal', name: 'Personal', color: '#41B3A3' },
+            { id: 'random', name: 'Random Thoughts', color: '#EF9C66' },
+            { id: 'school', name: 'School', color: '#FCDC94' },
+            { id: 'personal', name: 'Personal', color: '#78ABA8' },
           ];
 
           const createdCategories = await Promise.all(
             defaultCategories.map(cat => categoriesApi.createCategory(cat))
           );
-
-          alert(JSON.stringify(createdCategories))
 
           setCategories([
             { id: 'all', name: 'All Categories', color: '#8B4513' },
@@ -78,7 +76,7 @@ export default function DashboardPage() {
     // Fetch notes when component mounts or selected category changes
     const fetchNotes = async () => {
       try {
-        const apiNotes = await notesApi.fetchNotes(selectedCategory.id);
+        const apiNotes = await notesApi.fetchNotes(selectedCategory.id === 'all' ? undefined : selectedCategory.id);
         const transformedNotes: Note[] = apiNotes.map(note => ({
           id: note.id,
           title: note.title,
@@ -107,7 +105,7 @@ export default function DashboardPage() {
 
   const handleSaveNote = async (note: Omit<Note, 'id' | 'createdAt'>) => {
     try {
-      const targetCategory = note.categoryId === 'all' ? categories[1].id : note.categoryId; // Use first real category if 'all' is selected
+      const targetCategory = note.categoryId === 'all' ? categories[1].id : note.categoryId;
       const apiNote = await notesApi.createNote({
         title: note.title,
         content: note.content,
@@ -238,8 +236,8 @@ export default function DashboardPage() {
                   key={note.id}
                   className="h-[246px] rounded-[11px] p-4 shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)] transition-shadow duration-200 flex flex-col"
                   style={{ 
-                    backgroundColor: category?.color ? `${category.color}20` : '#FAF1E3',
-                    border: `3px solid ${getBorderColor(category?.color || '#957139')}`
+                    backgroundColor: category?.color ? `${category.color}80` : '#FAF1E3',
+                    border: `3px solid ${category?.color || '#957139'}`
                   }}
                 >
                   <div className="flex items-center gap-2 mb-3 text-[#4A4A4A]">

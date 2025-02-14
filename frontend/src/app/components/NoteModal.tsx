@@ -20,7 +20,7 @@ interface NoteModalProps {
 export default function NoteModal({ isOpen, onClose, selectedCategory, categories, onSave }: NoteModalProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [selectedCategoryId, setSelectedCategoryId] = useState(selectedCategory.name);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(selectedCategory.id);
   const [currentCategory, setCurrentCategory] = useState(selectedCategory);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -50,7 +50,7 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
       setIsDropdownOpen(false);
     } else {
       // When modal opens, explicitly set the category
-      setSelectedCategoryId(selectedCategory.name);
+      setSelectedCategoryId(selectedCategory.id);
       setCurrentCategory(selectedCategory);
     }
   }, [isOpen, selectedCategory]);
@@ -150,7 +150,7 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
                     type="button"
                     className="w-full px-4 py-2 text-left text-xs font-inter hover:bg-black/5 flex items-center gap-2"
                     onClick={() => {
-                      setSelectedCategoryId(category.name);
+                      setSelectedCategoryId(category.id);
                       setCurrentCategory(category);
                       setIsDropdownOpen(false);
                     }}
@@ -190,18 +190,18 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
                 placeholder="Note Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder-white/50 text-white"
+                className="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder-black/50 text-black"
               />
               <textarea
                 placeholder="Pour your heart out..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full h-[calc(80vh-200px)] bg-transparent border-none outline-none resize-none placeholder-white/50 text-white"
+                className="w-full h-[calc(80vh-200px)] bg-transparent border-none outline-none resize-none placeholder-black/50 text-black"
               />
             </div>
 
             {/* Last edited timestamp */}
-            <div className="p-4 text-sm border-t text-white" style={{ 
+            <div className="p-4 text-sm border-t text-black" style={{ 
               borderColor: currentCategory.color
             }}>
               Last Edited: {currentTime}
