@@ -111,27 +111,14 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
       <div 
         className="rounded-2xl w-full max-w-3xl min-h-[80vh] flex flex-col relative overflow-hidden"
       >
-        {/* Header with category and close button */}
-        <div className="flex justify-between items-center py-6">
-          <button
-            type="button"
-            onClick={handleClose}
-            className="text-gray-600 hover:opacity-80 transition-colors text-3xl font-light"
-          >
-            ×
-          </button>
-          <div className="text-sm text-black/60">
-            Last Edited: {currentTime}
-          </div>
-        </div>
-
         <div className="flex-1 flex flex-col">
-          {/* Category dropdown */}
-          <div className="flex justify-between items-center p-4 border-b" style={{ borderColor: currentCategory.color }}>
+          {/* Category dropdown and close button */}
+          <div className="flex justify-between items-center p-4">
             <div className="relative category-dropdown">
               <button
                 type="button"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm hover:bg-black/5"
+                className="flex items-center gap-2 w-[200px] px-3 py-1.5 rounded-lg bg-white border"
+                style={{ borderColor: '#957139' }}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <div
@@ -140,7 +127,7 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
                 />
                 <span>{currentCategory.name}</span>
                 <svg
-                  className={`w-4 h-4 transition-transform duration-200 ${
+                  className={`w-6 h-6 ml-auto transition-transform duration-200 ${
                     isDropdownOpen ? 'rotate-180' : ''
                   }`}
                   fill="none"
@@ -158,12 +145,12 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
 
               {/* Dropdown menu */}
               {isDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-48 rounded-lg bg-white shadow-lg border border-gray-100 z-10">
+                <div className="absolute left-0 mt-2 w-[200px] rounded-lg bg-[#FAF1E3] shadow-lg overflow-hidden z-10">
                   {categories.map((category) => (
                     <button
                       key={category.id}
                       type="button"
-                      className="w-full px-4 py-2 text-left text-xs font-inter hover:bg-black/5 flex items-center gap-2"
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-[#95713933] flex items-center gap-2"
                       onClick={() => {
                         setSelectedCategoryId(category.id);
                         setCurrentCategory(category);
@@ -180,22 +167,45 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
                 </div>
               )}
             </div>
+            <button
+              type="button"
+              onClick={handleClose}
+              className="text-black/60 hover:opacity-80 transition-colors"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 18L18 6M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
           </div>
 
-          <div className="flex-1 p-6 space-y-4">
-            <input
-              type="text"
-              placeholder="Note Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder-black/50 text-black"
-            />
-            <textarea
-              placeholder="Pour your heart out..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="w-full h-[calc(80vh-200px)] bg-transparent border-none outline-none resize-none placeholder-black/50 text-black"
-            />
+          {/* Content area with category color background */}
+          <div 
+            className="flex-1 rounded-xl mx-4 mb-4 overflow-hidden"
+            style={{ 
+              backgroundColor: `${currentCategory.color}20`,
+              border: `1px solid ${currentCategory.color}`
+            }}
+          >
+            <div className="p-6 space-y-4">
+              {/* Last edited timestamp */}
+              <div className="text-sm text-black/60 mb-4">
+                Last Edited: {currentTime}
+              </div>
+              
+              <input
+                type="text"
+                placeholder="Note Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder-black/50 text-black"
+              />
+              <textarea
+                placeholder="Pour your heart out..."
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="w-full h-[calc(80vh-200px)] bg-transparent border-none outline-none resize-none placeholder-black/50 text-black"
+              />
+            </div>
           </div>
         </div>
       </div>
