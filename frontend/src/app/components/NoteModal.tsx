@@ -180,15 +180,15 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
 
           {/* Content area with category color background */}
           <div 
-            className="flex-1 rounded-xl mx-4 mb-4 overflow-hidden"
+            className="flex-1 rounded-[11px] mx-4 mb-4 overflow-hidden"
             style={{ 
-              backgroundColor: `${currentCategory.color}20`,
-              border: `1px solid ${currentCategory.color}`
+              backgroundColor: `${currentCategory.color}80`,
+              border: `3px solid ${currentCategory.color}`
             }}
           >
             <div className="p-6 space-y-4">
               {/* Last edited timestamp */}
-              <div className="text-sm text-black/60 mb-4">
+              <div className="text-black text-right font-['Inter'] text-[12px] font-normal mb-4">
                 Last Edited: {currentTime}
               </div>
               
@@ -197,13 +197,14 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
                 placeholder="Note Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder-black/50 text-black"
+                className="w-full font-['Inria_Serif'] text-[24px] font-bold bg-transparent border-none outline-none placeholder-black/50 text-black"
               />
+              
               <textarea
-                placeholder="Pour your heart out..."
+                placeholder="Write your note here..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full h-[calc(80vh-200px)] bg-transparent border-none outline-none resize-none placeholder-black/50 text-black"
+                className="w-full h-[calc(100vh-400px)] bg-transparent border-none outline-none resize-none placeholder-black/50 text-black font-['Inter'] text-[16px] font-normal"
               />
             </div>
           </div>
