@@ -72,19 +72,23 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
     }
   }, [isOpen, selectedCategory, existingNote, categories]);
 
-  // Update title content and cursor position
+  // Auto-resize title field
+  const adjustTitleHeight = () => {
+    const textarea = titleRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      const newHeight = Math.min(textarea.scrollHeight, 24 * 5); // 24px line-height * 5 lines max
+      textarea.style.height = `${newHeight}px`;
+    }
+  };
+
+  // Update title content and adjust height
   useEffect(() => {
     if (titleRef.current) {
       const titleElement = titleRef.current;
       if (titleElement.value !== title) {
         titleElement.value = title;
-        // Move cursor to end
-        const range = document.createRange();
-        const selection = window.getSelection();
-        range.selectNodeContents(titleElement);
-        range.collapse(false);
-        selection?.removeAllRanges();
-        selection?.addRange(range);
+        adjustTitleHeight();
       }
     }
   }, [title]);
@@ -216,19 +220,20 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
                 value={title}
                 onChange={(e) => {
                   const content = e.target.value;
-                  // Remove any line breaks
-                  const singleLine = content.replace(/\n/g, ' ');
-                  setTitle(singleLine);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
+                  // Allow up to 5 lines
+                  const lines = content.split('\n');
+                  if (lines.length <= 5) {
+                    setTitle(content);
+                    adjustTitleHeight();
                   }
                 }}
-                className="w-full font-['Inria_Serif'] text-[24px] font-bold bg-transparent outline-none text-black resize-none overflow-hidden"
+                className="w-full font-['Inria_Serif'] text-[24px] font-bold bg-transparent outline-none text-black resize-none placeholder-black/50 overflow-hidden"
                 style={{
                   display: 'block',
-                  wordWrap: 'break-word'
+                  wordWrap: 'break-word',
+                  color: '#000000',
+                  lineHeight: '24px',
+                  minHeight: '24px'
                 }}
               />
               
