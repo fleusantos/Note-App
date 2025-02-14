@@ -310,8 +310,8 @@ export default function DashboardPage() {
                     <span className="font-inter text-note-sm-bold capitalize">{formatDate(note.createdAt)}</span>
                     <span className="font-inter text-note-sm">{category?.name}</span>
                   </div>
-                  <h3 className="font-inria text-note-title mb-4 text-black line-clamp-2 break-words">{note.title}</h3>
-                  <p className="font-inter text-note-sm text-[#4A4A4A] leading-relaxed line-clamp-4 flex-1">{note.content}</p>
+                  <h3 className="font-inria text-note-title mb-4 text-black line-clamp-4 break-words whitespace-pre-wrap">{note.title}</h3>
+                  <p className="font-inter text-note-sm text-[#4A4A4A] leading-relaxed line-clamp-4 flex-1 break-words whitespace-pre-wrap">{note.content}</p>
                 </div>
               );
             })}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 
 interface Category {
@@ -29,6 +29,7 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
   const [selectedCategoryId, setSelectedCategoryId] = useState(selectedCategory.id);
   const [currentCategory, setCurrentCategory] = useState(selectedCategory);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const titleRef = useRef<HTMLTextAreaElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -70,6 +71,23 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
       }
     }
   }, [isOpen, selectedCategory, existingNote, categories]);
+
+  // Update title content and cursor position
+  useEffect(() => {
+    if (titleRef.current) {
+      const titleElement = titleRef.current;
+      if (titleElement.value !== title) {
+        titleElement.value = title;
+        // Move cursor to end
+        const range = document.createRange();
+        const selection = window.getSelection();
+        range.selectNodeContents(titleElement);
+        range.collapse(false);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+    }
+  }, [title]);
 
   // Log category changes for debugging
   useEffect(() => {
@@ -192,19 +210,33 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
                 Last Edited: {currentTime}
               </div>
               
-              <input
-                type="text"
+              <textarea
+                ref={titleRef}
                 placeholder="Note Title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full font-['Inria_Serif'] text-[24px] font-bold bg-transparent border-none outline-none placeholder-black/50 text-black"
+                onChange={(e) => {
+                  const content = e.target.value;
+                  // Remove any line breaks
+                  const singleLine = content.replace(/\n/g, ' ');
+                  setTitle(singleLine);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                  }
+                }}
+                className="w-full font-['Inria_Serif'] text-[24px] font-bold bg-transparent outline-none text-black resize-none overflow-hidden"
+                style={{
+                  display: 'block',
+                  wordWrap: 'break-word'
+                }}
               />
               
               <textarea
                 placeholder="Write your note here..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full h-[calc(100vh-400px)] bg-transparent border-none outline-none resize-none placeholder-black/50 text-black font-['Inter'] text-[16px] font-normal"
+                className="w-full h-[calc(100vh-400px)] bg-transparent border-none outline-none resize-none placeholder-black/50 text-black font-['Inter'] text-[16px] font-normal whitespace-pre-wrap break-words"
               />
             </div>
           </div>
