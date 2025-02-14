@@ -15,9 +15,15 @@ interface NoteModalProps {
   selectedCategory: Category;
   categories: Category[];
   onSave: (note: { title: string; content: string; categoryId: string }) => void;
+  existingNote?: {
+    id: string;
+    title: string;
+    content: string;
+    categoryId: string;
+  };
 }
 
-export default function NoteModal({ isOpen, onClose, selectedCategory, categories, onSave }: NoteModalProps) {
+export default function NoteModal({ isOpen, onClose, selectedCategory, categories, onSave, existingNote }: NoteModalProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(selectedCategory.id);
@@ -49,11 +55,21 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
       setContent('');
       setIsDropdownOpen(false);
     } else {
-      // When modal opens, explicitly set the category
-      setSelectedCategoryId(selectedCategory.id);
-      setCurrentCategory(selectedCategory);
+      // When modal opens, set the initial state
+      if (existingNote) {
+        setTitle(existingNote.title);
+        setContent(existingNote.content);
+        const noteCategory = categories.find(c => c.id === existingNote.categoryId) || selectedCategory;
+        setSelectedCategoryId(noteCategory.id);
+        setCurrentCategory(noteCategory);
+      } else {
+        setTitle('');
+        setContent('');
+        setSelectedCategoryId(selectedCategory.id);
+        setCurrentCategory(selectedCategory);
+      }
     }
-  }, [isOpen, selectedCategory]);
+  }, [isOpen, selectedCategory, existingNote, categories]);
 
   // Log category changes for debugging
   useEffect(() => {

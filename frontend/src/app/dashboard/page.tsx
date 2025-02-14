@@ -28,6 +28,7 @@ export default function DashboardPage() {
     { id: 'all', name: 'All Categories', color: '#8B4513' },
   ]);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -100,30 +101,61 @@ export default function DashboardPage() {
   };
 
   const handleNewNote = () => {
+    setEditingNote(null);
     setIsModalOpen(true);
   };
 
-  const handleSaveNote = async (note: Omit<Note, 'id' | 'createdAt'>) => {
+  const handleEditNote = (note: Note) => {
+    setEditingNote(note);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveNote = async (noteData: { title: string; content: string; categoryId: string }) => {
     try {
-      const targetCategory = note.categoryId === 'all' ? categories[1].id : note.categoryId;
-      const apiNote = await notesApi.createNote({
-        title: note.title,
-        content: note.content,
-        category: targetCategory,
-      });
-      
-      const newNote: Note = {
-        id: apiNote.id,
-        title: apiNote.title,
-        content: apiNote.content,
-        categoryId: apiNote.category,
-        createdAt: apiNote.created_at,
-      };
-      
-      setNotes(prev => [newNote, ...prev]);
+      const targetCategory = noteData.categoryId === 'all' ? categories[1].id : noteData.categoryId;
+
+      if (editingNote) {
+        // Update existing note
+        const apiNote = await notesApi.updateNote(editingNote.id, {
+          title: noteData.title,
+          content: noteData.content,
+          category: targetCategory,
+        });
+
+        const updatedNote: Note = {
+          id: apiNote.id,
+          title: apiNote.title,
+          content: apiNote.content,
+          categoryId: apiNote.category,
+          createdAt: apiNote.created_at,
+        };
+
+        setNotes(prev => prev.map(note => 
+          note.id === updatedNote.id ? updatedNote : note
+        ));
+      } else {
+        // Create new note
+        const apiNote = await notesApi.createNote({
+          title: noteData.title,
+          content: noteData.content,
+          category: targetCategory,
+        });
+        
+        const newNote: Note = {
+          id: apiNote.id,
+          title: apiNote.title,
+          content: apiNote.content,
+          categoryId: apiNote.category,
+          createdAt: apiNote.created_at,
+        };
+        
+        setNotes(prev => [newNote, ...prev]);
+      }
+
       setIsModalOpen(false);
+      setEditingNote(null);
     } catch (error) {
-      console.error('Failed to create note:', error);
+      console.error('Failed to save note:', error);
     }
   };
 
@@ -234,17 +266,18 @@ export default function DashboardPage() {
               return (
                 <div
                   key={note.id}
-                  className="h-[246px] rounded-[11px] p-4 shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)] transition-shadow duration-200 flex flex-col"
+                  className="h-[246px] rounded-[11px] p-4 shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)] transition-shadow duration-200 flex flex-col cursor-pointer"
                   style={{ 
                     backgroundColor: category?.color ? `${category.color}80` : '#FAF1E3',
                     border: `3px solid ${category?.color || '#957139'}`
                   }}
+                  onClick={() => handleEditNote(note)}
                 >
                   <div className="flex items-center gap-2 mb-3 text-[#4A4A4A]">
                     <span className="font-inter text-note-sm-bold capitalize">{formatDate(note.createdAt)}</span>
                     <span className="font-inter text-note-sm">{category?.name}</span>
                   </div>
-                  <h3 className="font-inria text-note-title mb-4 text-black">{note.title}</h3>
+                  <h3 className="font-inria text-note-title mb-4 text-black line-clamp-2 break-words">{note.title}</h3>
                   <p className="font-inter text-note-sm text-[#4A4A4A] leading-relaxed line-clamp-4 flex-1">{note.content}</p>
                 </div>
               );
@@ -260,6 +293,7 @@ export default function DashboardPage() {
         selectedCategory={selectedCategory}
         categories={categories.filter(cat => cat.id !== 'all')} // Exclude 'All Categories' from dropdown
         onSave={handleSaveNote}
+        existingNote={editingNote || undefined}
       />
     </div>
   );

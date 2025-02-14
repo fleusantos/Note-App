@@ -15,7 +15,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export interface Note {
+export interface ApiNote {
   id: string;
   title: string;
   content: string;
@@ -32,21 +32,18 @@ export interface Category {
 
 export const notesApi = {
   fetchNotes: async (categoryId?: string) => {
-    const params = categoryId && categoryId !== 'all' ? { category: categoryId } : {};
-    const response = await api.get<Note[]>('/notes/', { params });
+    const params = categoryId ? { category: categoryId } : {};
+    const response = await api.get<ApiNote[]>('/notes/', { params });
     return response.data;
   },
-
   createNote: async (data: { title: string; content: string; category: string }) => {
-    const response = await api.post<Note>('/notes/', data);
+    const response = await api.post<ApiNote>('/notes/', data);
     return response.data;
   },
-
-  updateNote: async (id: string, data: { title: string; content: string; category: string }) => {
-    const response = await api.put<Note>(`/notes/${id}/`, data);
+  updateNote: async (noteId: string, data: { title: string; content: string; category: string }) => {
+    const response = await api.put<ApiNote>(`/notes/${noteId}/`, data);
     return response.data;
   },
-
   deleteNote: async (id: string) => {
     await api.delete(`/notes/${id}/`);
   },
