@@ -20,12 +20,16 @@ interface NoteModalProps {
     title: string;
     content: string;
     categoryId: string;
+    updated_at?: string;
   };
 }
 
 export default function NoteModal({ isOpen, onClose, selectedCategory, categories, onSave, existingNote }: NoteModalProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [originalTitle, setOriginalTitle] = useState('');
+  const [originalContent, setOriginalContent] = useState('');
+  const [originalCategoryId, setOriginalCategoryId] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(selectedCategory.id);
   const [currentCategory, setCurrentCategory] = useState(selectedCategory);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -54,18 +58,26 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
       // Reset state when modal closes
       setTitle('');
       setContent('');
+      setOriginalTitle('');
+      setOriginalContent('');
       setIsDropdownOpen(false);
     } else {
       // When modal opens, set the initial state
       if (existingNote) {
         setTitle(existingNote.title);
         setContent(existingNote.content);
+        setOriginalTitle(existingNote.title);
+        setOriginalContent(existingNote.content);
+        setOriginalCategoryId(existingNote.categoryId);
         const noteCategory = categories.find(c => c.id === existingNote.categoryId) || selectedCategory;
         setSelectedCategoryId(noteCategory.id);
         setCurrentCategory(noteCategory);
       } else {
         setTitle('');
         setContent('');
+        setOriginalTitle('');
+        setOriginalContent('');
+        setOriginalCategoryId('');
         // If selected category is "All Categories", set to "Personal" category
         if (selectedCategory.id === 'all') {
           const personalCategory = categories.find(c => c.name === 'Personal');
@@ -115,27 +127,44 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
 
-    onSave({
+    const noteData: { 
+      title: string;
+      content: string;
+      categoryId: string;
+    } = {
       title: title.trim(),
       content: content.trim(),
       categoryId: currentCategory.id,
-    });
+    };
+
+    onSave(noteData);
   };
 
   const handleClose = () => {
-    if (title.trim() || content.trim()) {
-      onSave({
+    // Only save if there are actual changes
+    const hasChanges = 
+      title.trim() !== originalTitle.trim() ||
+      content.trim() !== originalContent.trim() ||
+      currentCategory.id !== originalCategoryId;
+
+    if (hasChanges && (title.trim() || content.trim())) {
+      const noteData = {
         title: title.trim() || 'Untitled',
         content: content.trim(),
         categoryId: currentCategory.id,
-      });
+      };
+      onSave(noteData);
     }
     onClose();
   };
 
   if (!isOpen) return null;
 
-  const currentTime = format(new Date(), "MMMM d, yyyy 'at' h:mma");
+  console.log('=============== Existing Note: ============', existingNote);
+
+  const displayTime = existingNote?.updated_at 
+    ? format(new Date(existingNote.updated_at), "MMMM d, yyyy 'at' h:mma")
+    : format(new Date(), "MMMM d, yyyy 'at' h:mma");
 
   return (
     <div className="fixed inset-0 bg-[#FAF1E3] flex items-center justify-center p-4 z-50">
@@ -221,7 +250,7 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
             <div className="p-6 space-y-4">
               {/* Last edited timestamp */}
               <div className="text-black text-right font-['Inter'] text-[12px] font-normal mb-4">
-                Last Edited: {currentTime}
+                Last Edited: {displayTime}
               </div>
               
               <textarea

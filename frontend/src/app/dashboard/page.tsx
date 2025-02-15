@@ -18,7 +18,7 @@ interface Note {
   title: string;
   content: string;
   categoryId: string;
-  createdAt: string;
+  updatedAt: string;
   color: string;
 }
 
@@ -75,7 +75,7 @@ export default function DashboardPage() {
             title: note.title,
             content: note.content,
             categoryId: note.category,
-            createdAt: note.created_at,
+            updatedAt: note.updated_at || new Date().toISOString(),
             color: noteCategory?.color || '#000000',
           };
         });
@@ -132,7 +132,7 @@ export default function DashboardPage() {
           title: apiNote.title,
           content: apiNote.content,
           categoryId: apiNote.category,
-          createdAt: apiNote.created_at,
+          updatedAt: apiNote.updated_at || new Date().toISOString(),
           color: categories.find(cat => cat.id === apiNote.category)?.color || '#000000',
         };
 
@@ -161,7 +161,7 @@ export default function DashboardPage() {
           title: apiNote.title,
           content: apiNote.content,
           categoryId: apiNote.category,
-          createdAt: apiNote.created_at,
+          updatedAt: apiNote.updated_at || new Date().toISOString(),
           color: categories.find(cat => cat.id === apiNote.category)?.color || '#000000',
         };
         
@@ -302,7 +302,7 @@ export default function DashboardPage() {
                   onClick={() => handleEditNote(note)}
                 >
                   <div className="flex items-center gap-2 mb-3 text-[#4A4A4A]">
-                    <span className="font-inter text-note-sm-bold capitalize">{formatDate(note.createdAt)}</span>
+                    <span className="font-inter text-note-sm-bold capitalize">{formatDate(note.updatedAt)}</span>
                     <span className="font-inter text-note-sm">{category?.name}</span>
                   </div>
                   <h3 className="font-inria text-note-title mb-4 text-black line-clamp-4 break-words whitespace-pre-wrap">{note.title}</h3>

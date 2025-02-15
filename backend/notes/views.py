@@ -2,6 +2,9 @@ from django.shortcuts import render
 from rest_framework import viewsets, permissions
 from .models import Category, Note
 from .serializers import CategorySerializer, NoteSerializer
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -24,3 +27,9 @@ class NoteViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(category_id=category_id)
         
         return queryset.select_related('category')
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        note = self.get_object()
+        logger.info(f"Note updated - ID: {note.id}, Title: {note.title}, Content: {note.content}, Updated At: {note.updated_at}")
+        return response
