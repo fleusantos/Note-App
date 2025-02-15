@@ -148,7 +148,7 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
             <div className="relative category-dropdown">
               <button
                 type="button"
-                className="flex items-center gap-2 w-[200px] px-3 py-1.5 rounded-lg bg-white border"
+                className="flex items-center gap-2 w-[230px] px-3 py-1.5 rounded-lg bg-white border"
                 style={{ borderColor: '#957139' }}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
