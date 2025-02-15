@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import NoteModal from '../NoteModal'
+import NoteModal from '../../components/NoteModal'
 
 describe('NoteModal', () => {
   const mockOnClose = jest.fn()

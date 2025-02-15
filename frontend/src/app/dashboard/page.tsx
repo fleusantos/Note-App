@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import NoteModal from '../components/NoteModal';
+import NoteModal from '../../components/NoteModal';
 import { notesApi, categoriesApi } from '../services/api';
 import { checkAuth } from '../utils/auth';
 
