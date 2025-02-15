@@ -20,7 +20,7 @@ interface NoteModalProps {
     title: string;
     content: string;
     categoryId: string;
-    updated_at?: string;
+    updatedAt?: string;
   };
 }
 
@@ -160,12 +160,11 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
 
   if (!isOpen) return null;
 
-  console.log('=============== Existing Note: ============', existingNote);
-
-  const displayTime = existingNote?.updated_at 
-    ? format(new Date(existingNote.updated_at), "MMMM d, yyyy 'at' h:mma")
-    : format(new Date(), "MMMM d, yyyy 'at' h:mma");
-
+  
+  const displayTime = existingNote?.updatedAt 
+  ? format(new Date(existingNote.updatedAt), "MMMM d, yyyy 'at' h:mma")
+  : format(new Date(), "MMMM d, yyyy 'at' h:mma");
+  
   return (
     <div className="fixed inset-0 bg-[#FAF1E3] flex items-center justify-center p-4 z-50">
       <div 
