@@ -103,7 +103,7 @@ export default function DashboardPage() {
     } else {
       setFilteredNotes(allNotes.filter(note => note.categoryId === category.id));
     }
-  };
+  };  
 
   const handleNewNote = () => {
     setEditingNote(null);

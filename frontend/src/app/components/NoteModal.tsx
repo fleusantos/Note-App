@@ -202,6 +202,7 @@ export default function NoteModal({ isOpen, onClose, selectedCategory, categorie
               type="button"
               onClick={handleClose}
               className="text-black/60 hover:opacity-80 transition-colors"
+              aria-label="Close modal"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M6 18L18 6M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

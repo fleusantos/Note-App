@@ -37,6 +37,100 @@ A modern note-taking application built with Django and Next.js, featuring real-t
    ```
    Frontend will be available at http://localhost:3000
 
+## Testing Guide
+
+### Backend Testing (Django/Python)
+The backend uses pytest and Django's test framework for unit testing.
+
+1. Run all tests with coverage:
+   ```bash
+   cd backend
+   python -m pytest
+   ```
+
+2. Run tests for specific apps:
+   ```bash
+   python -m pytest notes/tests.py    # Test notes app
+   python -m pytest users/tests.py    # Test users app
+   ```
+
+3. Run specific test class or method:
+   ```bash
+   # Run specific test class
+   python -m pytest notes/tests.py::NoteModelTests
+
+   # Run specific test method
+   python -m pytest notes/tests.py::NoteModelTests::test_note_creation
+   ```
+
+4. Useful pytest options:
+   ```bash
+   python -m pytest -v    # Verbose output
+   python -m pytest -x    # Stop on first failure
+   python -m pytest -k "test_name"  # Run tests matching the name
+   ```
+
+5. Writing a new test:
+   ```python
+   from django.test import TestCase
+   from .models import Note
+   
+   class NoteModelTests(TestCase):
+       def setUp(self):
+           self.note = Note.objects.create(
+               title="Test Note",
+               content="Test Content"
+           )
+   
+       def test_note_creation(self):
+           self.assertEqual(self.note.title, "Test Note")
+           self.assertTrue(isinstance(self.note, Note))
+   ```
+
+### Frontend Testing (Next.js/React)
+The frontend uses Jest and React Testing Library for unit testing.
+
+1. Run all tests:
+   ```bash
+   cd frontend
+   npm test
+   ```
+
+2. Run tests in watch mode:
+   ```bash
+   npm test -- --watch
+   ```
+
+3. Run specific test file:
+   ```bash
+   npm test -- components/NoteModal.test.tsx
+   ```
+
+4. Writing a new test:
+   ```typescript
+   import { render, screen, fireEvent } from '@testing-library/react'
+   import NoteModal from '../NoteModal'
+   
+   describe('NoteModal', () => {
+     it('renders modal with correct title', () => {
+       render(<NoteModal title="Test Note" />)
+       expect(screen.getByText('Test Note')).toBeInTheDocument()
+     })
+   
+     it('handles user input correctly', () => {
+       render(<NoteModal />)
+       const input = screen.getByRole('textbox')
+       fireEvent.change(input, { target: { value: 'New Note' } })
+       expect(input.value).toBe('New Note')
+     })
+   })
+   ```
+
+5. Test coverage report:
+   ```bash
+   npm test -- --coverage
+   ```
+
 ## Development Process
 
 The application was developed through several key phases:

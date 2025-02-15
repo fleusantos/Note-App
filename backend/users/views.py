@@ -2,10 +2,11 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import make_password
+from rest_framework.views import APIView
 
 # Create your views here.
 
@@ -36,3 +37,29 @@ def register(request):
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }, status=status.HTTP_201_CREATED)
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'created_at': user.created_at
+        })
+
+    def patch(self, request):
+        user = request.user
+        if 'first_name' in request.data:
+            user.first_name = request.data['first_name']
+        if 'last_name' in request.data:
+            user.last_name = request.data['last_name']
+        user.save()
+        return Response({
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'created_at': user.created_at
+        })
