@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import NoteModal from '../components/NoteModal';
 import { notesApi, categoriesApi } from '../services/api';
+import { checkAuth } from '../utils/auth';
 
 interface Category {
   id: string;
@@ -31,13 +32,7 @@ export default function DashboardPage() {
   const [editingNote, setEditingNote] = useState<Note | null>(null);
 
   useEffect(() => {
-    // Check if user is authenticated
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      router.push('/auth/login');
-      return;
-    }
-
+    checkAuth();
     const initializeCategories = async () => {
       try {
         const existingCategories = await categoriesApi.fetchCategories();
